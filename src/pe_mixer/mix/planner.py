@@ -2,8 +2,8 @@
 
 from dataclasses import asdict, dataclass
 
-from pe_flac_mixer.analysis.analyzer import TrackAnalysis
-from pe_flac_mixer.config import SetupConfig
+from pe_mixer.analysis.analyzer import TrackAnalysis
+from pe_mixer.config import SetupConfig
 
 
 @dataclass
@@ -15,6 +15,12 @@ class TrackMixParams:
     gain_db: float
     pan: float
     highpass_hz: float | None
+    compressor_enabled: bool = False
+    compressor_threshold: float = -20.0
+    compressor_ratio: float = 3.0
+    compressor_attack: float = 10.0
+    compressor_release: float = 100.0
+    compressor_makeup: float = 0.0
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -115,7 +121,7 @@ def generate_mix_plan(analyses: dict[str, TrackAnalysis], setup: SetupConfig) ->
     tracks_plan: dict[str, TrackMixParams] = {}
 
     for filename, analysis in analyses.items():
-        ch_cfg = setup.channels.get(filename)
+        ch_cfg = setup.get_channel(filename)
         inst_name = ch_cfg.name if ch_cfg else analysis.instrument
         inst_lower = inst_name.lower().strip()
         group_lower = (ch_cfg.group if ch_cfg else analysis.group).lower().strip()
@@ -191,6 +197,12 @@ def generate_mix_plan(analyses: dict[str, TrackAnalysis], setup: SetupConfig) ->
             gain_db=gain_db,
             pan=pan,
             highpass_hz=highpass_hz,
+            compressor_enabled=ch_cfg.compressor_enabled if ch_cfg else False,
+            compressor_threshold=ch_cfg.compressor_threshold if ch_cfg else -20.0,
+            compressor_ratio=ch_cfg.compressor_ratio if ch_cfg else 3.0,
+            compressor_attack=ch_cfg.compressor_attack if ch_cfg else 10.0,
+            compressor_release=ch_cfg.compressor_release if ch_cfg else 100.0,
+            compressor_makeup=ch_cfg.compressor_makeup if ch_cfg else 0.0,
         )
 
     return MixPlan(

@@ -41,6 +41,12 @@ class ChannelConfig:
     type: Literal["mono", "stereo"] = "mono"
     pan: float = 0.0  # -1.0 (hard left) to 1.0 (hard right), 0.0 = Center
     width: float = 1.0  # Stereo width for stereo tracks (1.0 = normal)
+    compressor_enabled: bool = True
+    compressor_threshold: float = -22.0
+    compressor_ratio: float = 3.5
+    compressor_attack: float = 15.0
+    compressor_release: float = 100.0
+    compressor_makeup: float = 2.0
 
 
 @dataclass
@@ -49,6 +55,17 @@ class SetupConfig:
     description: str = ""
     channels: dict[str, ChannelConfig] = field(default_factory=dict)
     group_levels: dict[str, float] = field(default_factory=dict)  # Target LUFS per group
+
+    def get_channel(self, filename: str) -> ChannelConfig | None:
+        if not filename:
+            return None
+        if filename in self.channels:
+            return self.channels[filename]
+        base = Path(filename).stem.lower().strip()
+        for k, cfg in self.channels.items():
+            if Path(k).stem.lower().strip() == base:
+                return cfg
+        return None
 
 
 def load_setup(
@@ -117,6 +134,12 @@ def load_setup(
             type=cfg.get("type", "mono").lower(),
             pan=float(cfg.get("pan", 0.0)),
             width=float(cfg.get("width", 1.0)),
+            compressor_enabled=bool(cfg.get("compressor_enabled", True)),
+            compressor_threshold=float(cfg.get("compressor_threshold", -20.0)),
+            compressor_ratio=float(cfg.get("compressor_ratio", 3.0)),
+            compressor_attack=float(cfg.get("compressor_attack", 10.0)),
+            compressor_release=float(cfg.get("compressor_release", 100.0)),
+            compressor_makeup=float(cfg.get("compressor_makeup", 0.0)),
         )
 
     return SetupConfig(
@@ -141,21 +164,26 @@ def validate_and_match_tracks(
     if not input_dir.is_dir():
         raise NotADirectoryError(f"Eingabeverzeichnis nicht gefunden: {input_dir}")
 
-    # Alle Audio-Dateien im Verzeichnis finden (case-insensitive Match ermöglichen)
+    # Alle Audio-Dateien im Verzeichnis finden (case-insensitive & extension-agnostic Match ermöglichen)
     existing_files: dict[str, Path] = {}
+    existing_stems: dict[str, Path] = {}
     for p in input_dir.iterdir():
         if p.is_file() and p.suffix.lower() in [".flac", ".wav"]:
             existing_files[p.name] = p
             existing_files[p.name.lower()] = p
+            existing_stems[p.stem.lower()] = p
 
     matched: dict[str, Path] = {}
     missing: list[str] = []
 
     for filename in setup.channels:
+        file_stem = Path(filename).stem.lower()
         if filename in existing_files:
             matched[filename] = existing_files[filename]
         elif filename.lower() in existing_files:
             matched[filename] = existing_files[filename.lower()]
+        elif file_stem in existing_stems:
+            matched[filename] = existing_stems[file_stem]
         else:
             missing.append(filename)
 

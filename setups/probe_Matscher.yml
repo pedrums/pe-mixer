@@ -3,118 +3,118 @@ description: Probe-Setup für Schlappseil (Digitalmixer 18-Kanal Multitrack)
 
 # Target loudness levels per group (in LUFS)
 group_levels:
-  vocals lead: -14.0
-  vocals background: -23.0
-  drums: -21.0
-  bass: -21.0
-  guitars: -23.0
-  keys: -23.0
+  vocals lead: -5.0
+  vocals background: -15.0
+  drums: -15.0
+  bass: -15.0
+  guitars: -15.0
+  keys: -18.0
   other: -23.0
 
 channels:
-  "01 KICK.flac":
+  "01 KICK":
     name: Kick
     group: drums
     type: mono
     pan: 0.0
 
-  "02 SNARE.flac":
+  "02 SNARE":
     name: Snare Top
     group: drums
     type: mono
     pan: 0.0
 
-  "03 SNARE U.flac":
+  "03 SNARE U":
     name: Snare Bottom
     group: drums
     type: mono
     pan: 0.0
 
-  "04 HIHAT.flac":
+  "04 HIHAT":
     name: HiHat
     group: drums
     type: mono
     pan: 0.25
 
-  "05 HT1.flac":
+  "05 HT1":
     name: High Tom
     group: drums
     type: mono
     pan: -0.3
 
-  "06 STANDTOM.flac":
+  "06 STANDTOM":
     name: Floor Tom
     group: drums
     type: mono
     pan: 0.35
 
-  "07 OVH L.flac":
+  "07 OVH L":
     name: Overhead Left
     group: drums
     type: mono
     pan: -0.75
 
-  "08 OVH R.flac":
+  "08 OVH R":
     name: Overhead Right
     group: drums
     type: mono
     pan: 0.75
 
-  "09 BASS.flac":
+  "09 BASS":
     name: Bass
     group: bass
     type: mono
     pan: 0.0
 
-  "10 E-GITARRE.flac":
+  "10 E-GITARRE":
     name: E-Gitarre
     group: guitars
     type: mono
     pan: -0.45
 
-  "11 VOC MATSCHER.flac":
+  "11 VOC MATSCHER":
     name: Vocals Matscher
     group: vocals lead
     type: mono
     pan: -0.2
 
-  "12 VOC MATTEL.flac":
+  "12 VOC MATTEL":
     name: Vocals Mattel
     group: vocals background
     type: mono
     pan: 0.2
 
-  "13 VOC ZILLE.flac":
+  "13 VOC ZILLE":
     name: Vocals Zille
     group: vocals background
     type: mono
     pan: -0.35
 
-  "14 VOC TORSTEN.flac":
+  "14 VOC TORSTEN":
     name: Vocals Torsten
     group: vocals background
     type: mono
     pan: 0.35
 
-  "15 VOC PETER.flac":
+  "15 VOC PETER":
     name: Vocals Peter
     group: vocals background
     type: mono
     pan: 0.0
 
-  "16 A-GITARRE.flac":
+  "16 A-GITARRE":
     name: A-Gitarre
     group: guitars
     type: mono
     pan: 0.45
 
-  "19 TORSTENKEY-L.flac":
+  "19 TORSTENKEY-L":
     name: Keyboard Left
     group: keys
     type: mono
     pan: -0.6
 
-  "20 TORSTENKEY-R.flac":
+  "20 TORSTENKEY-R":
     name: Keyboard Right
     group: keys
     type: mono

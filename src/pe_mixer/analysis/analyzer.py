@@ -8,7 +8,7 @@ import numpy as np
 import pyloudnorm as pyln
 import soundfile as sf
 
-from pe_flac_mixer.config import SetupConfig
+from pe_mixer.config import SetupConfig
 
 
 @dataclass
@@ -121,7 +121,7 @@ def analyze_tracks(matched_tracks: dict[str, Path], setup: SetupConfig) -> dict[
     """Analysiert alle zugeordneten Spuren."""
     results: dict[str, TrackAnalysis] = {}
     for filename, path in matched_tracks.items():
-        ch_cfg = setup.channels.get(filename)
+        ch_cfg = setup.get_channel(filename)
         instrument = ch_cfg.name if ch_cfg else filename
         group = ch_cfg.group if ch_cfg else "other"
         results[filename] = analyze_track(path, filename, instrument, group)

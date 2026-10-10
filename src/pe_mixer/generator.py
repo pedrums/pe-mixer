@@ -7,7 +7,7 @@ from pathlib import Path
 import soundfile as sf
 import yaml
 
-from pe_flac_mixer.config import ChannelConfig, SetupConfig
+from pe_mixer.config import ChannelConfig, SetupConfig
 
 
 def natural_sort_key(path: Path):

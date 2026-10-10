@@ -5,10 +5,10 @@ from pathlib import Path
 import numpy as np
 import soundfile as sf
 
-from pe_flac_mixer.analysis.analyzer import analyze_tracks
-from pe_flac_mixer.config import load_setup, validate_and_match_tracks
-from pe_flac_mixer.generator import generate_setup_from_directory, save_setup_file
-from pe_flac_mixer.mix.dsp import (
+from pe_mixer.analysis.analyzer import analyze_tracks
+from pe_mixer.config import load_setup, validate_and_match_tracks
+from pe_mixer.generator import generate_setup_from_directory, save_setup_file
+from pe_mixer.mix.dsp import (
     SimpleReverb,
     apply_highpass,
     compressor,
@@ -16,20 +16,20 @@ from pe_flac_mixer.mix.dsp import (
     pan_mono_to_stereo,
     peak_limiter,
 )
-from pe_flac_mixer.mix.planner import generate_mix_plan
-from pe_flac_mixer.mix.renderer import render_mix
+from pe_mixer.mix.planner import generate_mix_plan
+from pe_mixer.mix.renderer import render_mix
 
 
 def test_load_setups():
     """Test loading standard setups."""
     setup_probe = load_setup("probe")
     assert setup_probe.name == "Schlappseil"
-    assert "01 KICK.flac" in setup_probe.channels
-    assert setup_probe.channels["01 KICK.flac"].type == "mono"
+    assert "01 KICK" in setup_probe.channels
+    assert setup_probe.channels["01 KICK"].type == "mono"
 
     setup_gig = load_setup("gig")
     assert setup_gig.name == "Gig"
-    assert "CH01.flac" in setup_gig.channels
+    assert "CH01" in setup_gig.channels
 
 
 def test_validate_and_match_tracks(tmp_path: Path):
@@ -43,9 +43,9 @@ def test_validate_and_match_tracks(tmp_path: Path):
 
     matched, missing, unknown = validate_and_match_tracks(tmp_path, setup)
 
-    assert "01 KICK.flac" in matched
-    assert "02 SNARE.flac" in matched
-    assert "09 BASS.flac" in missing
+    assert "01 KICK" in matched
+    assert "02 SNARE" in matched
+    assert "09 BASS" in missing
     assert "AUX01.flac" in unknown
 
 
@@ -169,7 +169,7 @@ def test_bulk_mixing_mode(tmp_path: Path):
 
     from typer.testing import CliRunner
 
-    from pe_flac_mixer.cli import app
+    from pe_mixer.cli import app
 
     runner = CliRunner()
     result = runner.invoke(app, ["mix", str(bulk_root), "--bulk", "--output", str(out_dir)])
@@ -208,8 +208,8 @@ def test_full_pipeline_end_to_end(tmp_path: Path):
     setup = load_setup("probe")
     matched, _, _ = validate_and_match_tracks(tracks_dir, setup)
 
-    assert "01 KICK.flac" in matched
-    assert "11 VOC MATSCHER.flac" in matched
+    assert "01 KICK" in matched
+    assert "11 VOC MATSCHER" in matched
 
     # 3. Perform analysis
     analyses = analyze_tracks(matched, setup)
@@ -220,14 +220,14 @@ def test_full_pipeline_end_to_end(tmp_path: Path):
 
     # 4. Generate mix plan
     plan = generate_mix_plan(analyses, setup)
-    assert "11 VOC MATSCHER.flac" in plan.tracks
+    assert "11 VOC MATSCHER" in plan.tracks
     # Vocals should have highpass around 90 Hz for lead vocals
-    assert plan.tracks["11 VOC MATSCHER.flac"].highpass_hz == 90.0
+    assert plan.tracks["11 VOC MATSCHER"].highpass_hz == 90.0
 
     # Verify plan can be serialized to dict (for JSON export)
     plan_dict = plan.to_dict()
     assert plan_dict["setup_name"] == "Schlappseil"
-    assert "11 VOC MATSCHER.flac" in plan_dict["tracks"]
+    assert "11 VOC MATSCHER" in plan_dict["tracks"]
 
     # 5. Render mix
     output_files = render_mix(matched, plan, output_dir)
@@ -309,7 +309,7 @@ def test_cut_command(tmp_path: Path):
 
     from typer.testing import CliRunner
 
-    from pe_flac_mixer.cli import app
+    from pe_mixer.cli import app
 
     runner = CliRunner()
     result = runner.invoke(app, ["cut", str(mp3_file), "--sec", "2.0", "--output", str(out_file)])

@@ -12,37 +12,37 @@ group_levels:
   other: -23.0
 
 channels:
-  CH01.flac:
+  CH01:
     name: Kick
     group: drums
     type: mono
     pan: 0.0
 
-  CH02.flac:
+  CH02:
     name: Snare
     group: drums
     type: mono
     pan: 0.0
 
-  CH03.flac:
+  CH03:
     name: HiHat
     group: drums
     type: mono
     pan: 0.25
 
-  CH04.flac:
+  CH04:
     name: Bass
     group: bass
     type: mono
     pan: 0.0
 
-  CH05.flac:
+  CH05:
     name: Guitar
     group: guitars
     type: mono
     pan: -0.4
 
-  CH06.flac:
+  CH06:
     name: Lead Vocal
     group: vocals
     type: mono

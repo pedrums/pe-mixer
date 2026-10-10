@@ -897,7 +897,7 @@ wheels = [
 ]
 
 [[package]]
-name = "pe-flac-mixer"
+name = "pe-mixer"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

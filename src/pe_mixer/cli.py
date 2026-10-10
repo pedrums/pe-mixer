@@ -10,16 +10,16 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from pe_flac_mixer.analysis.analyzer import analyze_tracks
-from pe_flac_mixer.config import load_setup, normalize_path, validate_and_match_tracks
-from pe_flac_mixer.generator import generate_setup_from_directory, save_setup_file
-from pe_flac_mixer.mix.planner import generate_mix_plan
-from pe_flac_mixer.mix.renderer import render_mix
+from pe_mixer.analysis.analyzer import analyze_tracks
+from pe_mixer.config import load_setup, normalize_path, validate_and_match_tracks
+from pe_mixer.generator import generate_setup_from_directory, save_setup_file
+from pe_mixer.mix.planner import generate_mix_plan
+from pe_mixer.mix.renderer import render_mix
 
 # Load environment variables from .env if present
 load_dotenv()
 
-app = typer.Typer(help="pe-flac-mixer: Automatic rough mix from FLAC multitrack stems.")
+app = typer.Typer(help="pe-mixer: Automatic rough mix from multitrack stems.")
 console = Console()
 
 
@@ -34,6 +34,12 @@ def analyze(
         "--setup",
         "-s",
         help="Name of the setup (e.g. 'probe' for setups/probe.yml)",
+    ),
+    force: bool = typer.Option(
+        False,
+        "--force",
+        "-f",
+        help="Force re-analysis ignoring cached analysis JSONs",
     ),
 ):
     """Analyze audio tracks and display peak levels, loudness (LUFS), and crest factor."""
@@ -84,11 +90,11 @@ def analyze(
     analysis_json_path = dir_path / f"{setup}_analysis.json"
     analyses = None
 
-    if analysis_json_path.exists():
+    if not force and analysis_json_path.exists():
         try:
             with open(analysis_json_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                from pe_flac_mixer.mix.analyzer import TrackAnalysis
+                from pe_mixer.mix.analyzer import TrackAnalysis
 
                 analyses = {k: TrackAnalysis.from_dict(v) for k, v in data.items()}
                 console.print(f"  [dim]Using cached analysis from {analysis_json_path.name}[/dim]")
@@ -275,6 +281,22 @@ def mix(
         "-b",
         help="Bulk mode: iterate through all subdirectories (each representing a track/song)",
     ),
+    force: bool = typer.Option(
+        False,
+        "--force",
+        "-f",
+        help="Force re-analysis ignoring cached analysis JSONs",
+    ),
+    export_tracks: bool = typer.Option(
+        False,
+        "--export-tracks",
+        help="Export individual tracks after each DSP step into tracks-tmp/",
+    ),
+    cut_sec: float = typer.Option(
+        0.5,
+        "--cut",
+        help="Number of seconds to skip/cut from the beginning of multitrack stems (default: 0.5s)",
+    ),
 ):
     """Automatically generates a clean rough mix from multitrack stems (single or bulk mode)."""
     env_setup = os.getenv("SETUP", "probe")
@@ -368,11 +390,11 @@ def mix(
                 cached_json_path = subdir / f"{active_setup}_analysis.json"
                 analyses = None
 
-                if cached_json_path.exists():
+                if not force and cached_json_path.exists():
                     try:
                         with open(cached_json_path, "r", encoding="utf-8") as f:
                             data = json.load(f)
-                            from pe_flac_mixer.mix.analyzer import TrackAnalysis
+                            from pe_mixer.mix.analyzer import TrackAnalysis
 
                             analyses = {k: TrackAnalysis.from_dict(v) for k, v in data.items()}
                             console.print(
@@ -401,7 +423,7 @@ def mix(
                 else:
                     track_out_dir = out_dir / track_name
 
-                output_files = render_mix(matched, plan, track_out_dir, base_name=track_name)
+                output_files = render_mix(matched, plan, track_out_dir, base_name=track_name, force=force, export_tracks=export_tracks, cut_sec=cut_sec, source_dir=subdir)
 
                 # Save mix plan as JSON alongside output files
                 plan_json_path = track_out_dir / f"{track_name}_mix_plan.json"
@@ -473,11 +495,11 @@ def mix(
     analysis_json_path = in_dir / f"{setup}_analysis.json"
     analyses = None
 
-    if analysis_json_path.exists():
+    if not force and analysis_json_path.exists():
         try:
             with open(analysis_json_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                from pe_flac_mixer.mix.analyzer import TrackAnalysis
+                from pe_mixer.mix.analyzer import TrackAnalysis
 
                 analyses = {k: TrackAnalysis.from_dict(v) for k, v in data.items()}
                 console.print(f"  [dim]Using cached analysis from {analysis_json_path.name}[/dim]")
@@ -526,7 +548,7 @@ def mix(
 
     # 3. DSP & Rendering
     console.print("\n[bold]3. Rendering mix & applying master limiter...[/bold]")
-    output_files = render_mix(matched, plan, out_dir, base_name=base_name)
+    output_files = render_mix(matched, plan, out_dir, base_name=base_name, force=force, export_tracks=export_tracks, cut_sec=cut_sec, source_dir=in_dir)
 
     # Save mix plan as JSON alongside output files
     plan_json_path = out_dir / f"{base_name}_mix_plan.json"

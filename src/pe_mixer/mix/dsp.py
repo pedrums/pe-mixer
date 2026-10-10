@@ -314,3 +314,49 @@ def peak_limiter(
     # Zur absoluten Sicherheit noch hard-clipping am Ceiling gegen Rundungsfehler
     np.clip(limited, -ceiling, ceiling, out=limited)
     return limited
+
+
+def noise_gate(
+    audio: np.ndarray,
+    threshold_db: float = -42.0,
+    ratio: float = 10.0,
+    attack_ms: float = 2.0,
+    release_ms: float = 80.0,
+    sr: int = 44100,
+) -> np.ndarray:
+    """
+    Dynamisches Noise-Gate zur Unterdrückung von Grundrauschen in Pausen.
+    """
+    if audio.ndim == 1:
+        peaks = np.abs(audio)
+    else:
+        peaks = np.max(np.abs(audio), axis=1)
+
+    peaks_db = 20.0 * np.log10(np.maximum(peaks, 1e-8))
+
+    gate_gain_db = np.zeros_like(peaks_db)
+    for i, p_db in enumerate(peaks_db):
+        if p_db < threshold_db:
+            diff = threshold_db - p_db
+            gate_gain_db[i] = -diff * (1.0 - 1.0 / ratio)
+
+    alpha_attack = math.exp(-1.0 / (sr * (attack_ms / 1000.0)))
+    alpha_release = math.exp(-1.0 / (sr * (release_ms / 1000.0)))
+
+    smoothed_gain_db = np.empty_like(gate_gain_db)
+    current_gain_db = 0.0
+
+    for i in range(len(gate_gain_db)):
+        target = gate_gain_db[i]
+        if target < current_gain_db:
+            current_gain_db = alpha_attack * current_gain_db + (1.0 - alpha_attack) * target
+        else:
+            current_gain_db = alpha_release * current_gain_db + (1.0 - alpha_release) * target
+        smoothed_gain_db[i] = current_gain_db
+
+    gain_linear = 10.0 ** (smoothed_gain_db / 20.0)
+
+    if audio.ndim == 1:
+        return audio * gain_linear.astype(np.float32)
+    else:
+        return (audio * gain_linear[:, np.newaxis]).astype(np.float32)
