@@ -24,6 +24,6 @@ nav:
   - Home: index.md
   - Installation & Schnellstart: getting-started.md
   - Setups & Konfiguration: setups.md
-  - DSP-Kette & Mixing-Engine: Mixer.md
+  - DSP-Kette & Mixing-Engine: mixing.md
   - CLI-Referenz: cli.md
   - API Reference: api.md
