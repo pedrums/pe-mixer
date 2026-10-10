@@ -52,10 +52,10 @@ class MixPlan:
 # Ziel-Lautheiten (LUFS) für Instrumentengruppen im Übungsmix
 TARGET_LUFS_BY_GROUP = {
     # Gesang differenziert: Lead klar im Vordergrund, Background dezent dahinter
-    "vocals lead": -14.0,  # Lead-Gesang: präsent ganz vorne im Mix
-    "lead vocals": -14.0,
-    "lead vocal": -14.0,
-    "lead": -14.0,
+    "vocals lead": -10.0,  # Lead-Gesang: präsent ganz vorne im Mix
+    "lead vocals": -10.0,
+    "lead vocal": -10.0,
+    "lead": -10.0,
     "vocals background": -23.0,  # Background/Chor: aufgeräumt im Hintergrund
     "background vocals": -23.0,
     "backing vocals": -23.0,

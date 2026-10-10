@@ -16,19 +16,19 @@ dev: # Install development dependencies
 	uv sync --dev
 
 mix: # Render rough mix (args: INPUT=<path> [SETUP=<name>] [CUT=<seconds>])
-	uv run pe-flac-mixer mix "$(INPUT)" --setup "$(SETUP)" $(if $(CUT),--cut "$(CUT)",)
+	uv run pe-mixer mix "$(INPUT)" --setup "$(SETUP)" $(if $(CUT),--cut "$(CUT)",)
 
 bulk: # Render bulk mix for all subdirectories (args: RECORDS=<path> or RECORD=<path>, SOURCE=<name> [SETUP=<name>] [OUTPUT=<path>] [CUT=<seconds>])
-	uv run pe-flac-mixer mix "$(or $(RECORDS),$(RECORD))/$(SOURCE)" --bulk --setup "$(SETUP)" $(if $(OUTPUT),--output "$(OUTPUT)",) $(if $(CUT),--cut "$(CUT)",)
+	uv run pe-mixer mix "$(or $(RECORDS),$(RECORD))/$(SOURCE)" --bulk --setup "$(SETUP)" $(if $(OUTPUT),--output "$(OUTPUT)",) $(if $(CUT),--cut "$(CUT)",)
 
 cut: # Cut X seconds from the beginning of an MP3 file (args: INPUT=<path> SEC=<seconds>)
-	uv run pe-flac-mixer cut "$(INPUT)" --sec $(SEC)
+	uv run pe-mixer cut "$(INPUT)" --sec $(SEC)
 
 analyze: # Analyze audio tracks (args: INPUT=<path> [SETUP=<name>])
-	uv run pe-flac-mixer analyze "$(INPUT)" --setup "$(SETUP)"
+	uv run pe-mixer analyze "$(INPUT)" --setup "$(SETUP)"
 
 create-setup: # Generate setup YAML by guessing tracks from directory (args: SOURCE=<path> [NAME=<name>])
-	uv run pe-flac-mixer create-setup --source "$(SOURCE)" $(if $(NAME),--name "$(NAME)",)
+	uv run pe-mixer create-setup --source "$(SOURCE)" $(if $(NAME),--name "$(NAME)",)
 
 test: # Run tests via pytest
 	uv run python -m pytest

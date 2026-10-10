@@ -89,7 +89,6 @@ def render_mix(
         steps_list = [
             "01_raw_trimmed",
             "02_highpass",
-            "04_gate",
             "05_compressor",
             "07_gain",
             "08_panned",
@@ -166,20 +165,8 @@ def render_mix(
                     if export_tracks:
                         step_writers["02_highpass"][filename].write(track_audio[:block_len])
 
-                    # Pro-Spur Kette: Gate -> Compressor (ohne künstliche Pre/Post-Normalisierung)
+                    # Pro-Spur Kette: Nur Compressor (Gate und Post-Normalisierung komplett entfernt, um Rauschen/Pumpen zu verhindern)
                     if params.compressor_enabled:
-                        track_audio = noise_gate(
-                            track_audio,
-                            threshold_db=-40.0,
-                            ratio=10.0,
-                            attack_ms=2.0,
-                            release_ms=80.0,
-                            sr=master_sr,
-                        )
-
-                        if export_tracks:
-                            step_writers["04_gate"][filename].write(track_audio[:block_len])
-
                         track_audio = compressor(
                             track_audio,
                             threshold_db=params.compressor_threshold,
@@ -194,7 +181,6 @@ def render_mix(
                             step_writers["05_compressor"][filename].write(track_audio[:block_len])
                     else:
                         if export_tracks:
-                            step_writers["04_gate"][filename].write(track_audio[:block_len])
                             step_writers["05_compressor"][filename].write(track_audio[:block_len])
 
                     # Gain anwenden
@@ -341,8 +327,15 @@ def render_mix(
         if temp_sum_path.exists():
             temp_sum_path.unlink()
 
+        # Erzwinge sofortigen Sync auf die Festplatte (verhindert 0-Byte-Anzeige im Windows Explorer)
         output_files = {}
         if mp3_written and mp3_path.exists():
+            try:
+                import os
+                with open(mp3_path, "rb") as f_sync:
+                    os.fsync(f_sync.fileno())
+            except Exception:
+                pass
             output_files["mp3"] = mp3_path
 
         return output_files

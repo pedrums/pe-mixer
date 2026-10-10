@@ -1,4 +1,4 @@
-"""Tests for pe-flac-mixer."""
+"""Tests for pe-mixer."""
 
 from pathlib import Path
 

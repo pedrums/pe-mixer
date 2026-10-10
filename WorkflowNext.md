@@ -1,6 +1,6 @@
-# Workflow-Plan: HiDrive + GitHub Actions für den `pe-flac-mixer`
+# Workflow-Plan: HiDrive + GitHub Actions für den `pe-mixer`
 
-Dieser Plan beschreibt, wie der Gitarrist Rohdaten auf HiDrive hochlädt, eine GitHub Action (Pipeline) getriggert wird, deine App (`pe-flac-mixer`) den Mix lokal in der Pipeline durchführt und das Ergebnis wieder auf HiDrive bereitstellt.
+Dieser Plan beschreibt, wie der Gitarrist Rohdaten auf HiDrive hochlädt, eine GitHub Action (Pipeline) getriggert wird, deine App (`pe-mixer`) den Mix lokal in der Pipeline durchführt und das Ergebnis wieder auf HiDrive bereitstellt.
 
 ---
 
@@ -24,7 +24,7 @@ Dieser Plan beschreibt, wie der Gitarrist Rohdaten auf HiDrive hochlädt, eine G
 Die Pipeline wird manuell über das GitHub-Webinterface getriggert (`workflow_dispatch`), optional mit Eingabe des jeweiligen Proben-Datums bzw. Ordnernamens.
 
 ### Ablauf der Pipeline:
-1. **Checkout:** Code des Repositories laden (inkl. `pe-flac-mixer`).
+1. **Checkout:** Code des Repositories laden (inkl. `pe-mixer`).
 2. **Environment Setup:** Python/Node.js (je nachdem, worauf deine App basiert) einrichten und Abhängigkeiten installieren.
 3. **Download von HiDrive:** 
    - Verbindung zu HiDrive aufbauen (z. B. via `lftp`, `rsync` oder einem kleinen Python-Skript).

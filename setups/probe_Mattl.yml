@@ -3,11 +3,12 @@ description: Probe-Setup für Schlappseil (Digitalmixer 18-Kanal Multitrack)
 
 # Target loudness levels per group (in LUFS)
 group_levels:
-  vocals lead: -14.0
-  vocals background: -23.0
+  vocals lead: -10.0
+  vocals background: -22.0
   drums: -21.0
-  bass: -21.0
-  guitars: -23.0
+  bass: -15.0
+  guitars: -15.0
+  acoustic_guitar: -25.0
   keys: -23.0
   other: -23.0
 
@@ -68,7 +69,7 @@ channels:
 
   "10 E-GITARRE":
     name: E-Gitarre
-    group: guitars
+    group: acoustic_guitar
     type: mono
     pan: -0.45
 

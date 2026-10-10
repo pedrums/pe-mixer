@@ -23,9 +23,20 @@ def apply_highpass(
     audio: Shape (N,) oder (N, channels)
     Returns: (filtered_audio, new_zi)
     """
+    # Mikro-Fade-in auf den ersten Block anwenden falls zi neu ist (verhindert Einschwing-Knacken)
+    if zi is None and len(audio) > 0:
+        fade_len = min(128, len(audio))
+        fade_weights = np.linspace(0.0, 1.0, fade_len, dtype=np.float32)
+        if audio.ndim == 1:
+            audio = audio.copy()
+            audio[:fade_len] *= fade_weights
+        else:
+            audio = audio.copy()
+            audio[:fade_len, :] *= fade_weights[:, np.newaxis]
+
     if audio.ndim == 1:
         if zi is None:
-            zi = signal.sosfilt_zi(sos)
+            zi = signal.sosfilt_zi(sos) * audio[0]
         filtered, new_zi = signal.sosfilt(sos, audio, zi=zi)
         return filtered.astype(np.float32), new_zi
     else:
@@ -34,7 +45,7 @@ def apply_highpass(
         if zi is None:
             zi = np.zeros((sos.shape[0], 2, channels), dtype=np.float64)
             for ch in range(channels):
-                zi[:, :, ch] = signal.sosfilt_zi(sos)
+                zi[:, :, ch] = signal.sosfilt_zi(sos) * audio[0, ch]
         filtered, new_zi = signal.sosfilt(sos, audio, axis=0, zi=zi)
         return filtered.astype(np.float32), new_zi
 

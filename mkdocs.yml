@@ -1,5 +1,5 @@
-site_name: pe-flac-mixer
-site_url: https://pedrums.github.io/pe-flac-mixer/
+site_name: pe-mixer
+site_url: https://pedrums.github.io/pe-mixer/
 theme:
   name: material
   palette:
@@ -22,6 +22,8 @@ plugins:
 
 nav:
   - Home: index.md
+  - Installation & Schnellstart: getting-started.md
+  - Setups & Konfiguration: setups.md
+  - DSP-Kette & Mixing-Engine: Mixer.md
+  - CLI-Referenz: cli.md
   - API Reference: api.md
-  - ToDo:
-    - Workflow: TODO/workflow.md

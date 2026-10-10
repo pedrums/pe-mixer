@@ -1,4 +1,4 @@
-"""Configuration and setup management for pe-flac-mixer."""
+"""Configuration and setup management for pe-mixer."""
 
 import re
 from dataclasses import dataclass, field

@@ -1,4 +1,4 @@
-"""CLI interface for pe-flac-mixer."""
+"""CLI interface for pe-mixer."""
 
 import json
 import os
@@ -53,7 +53,7 @@ def analyze(
     console.print(
         Panel(
             f"[bold cyan]Audio analysis for:[/bold cyan] {dir_path}\n[bold cyan]Setup:[/bold cyan] {setup}",
-            title="pe-flac-mixer",
+            title="pe-mixer",
         )
     )
 
@@ -174,7 +174,7 @@ def cut(
             f"[bold]Input:[/bold]  {path}\n"
             f"[bold]Cut:[/bold]    {sec} seconds from start\n"
             f"[bold]Output:[/bold] {out_path}",
-            title="pe-flac-mixer",
+            title="pe-mixer",
         )
     )
 
@@ -335,7 +335,7 @@ def mix(
                 f"[bold]Parent Directory:[/bold] {in_dir}\n"
                 f"[bold]Output Directory:[/bold] {out_dir}\n"
                 f"[bold]Global Setup:[/bold]     {active_setup} (override per directory with local {active_setup}.yml)",
-                title="pe-flac-mixer",
+                title="pe-mixer",
             )
         )
 
@@ -445,7 +445,7 @@ def mix(
                 f"[bold green]Bulk Mixing Complete[/bold green]\n"
                 f"[bold]Successful:[/bold] {success_count}\n"
                 f"[bold]Errors/Skipped:[/bold] {error_count}",
-                title="pe-flac-mixer",
+                title="pe-mixer",
             )
         )
         return
@@ -456,7 +456,7 @@ def mix(
     if bulk:
         out_dir = out_path_norm if out_path_norm and str(output_dir).strip() else in_dir
     else:
-        out_dir = out_path_norm or Path("./output")
+        out_dir = out_path_norm or in_dir
     base_name = name or in_dir.name
     console.print(
         Panel(
@@ -464,7 +464,7 @@ def mix(
             f"[bold]Input:[/bold]  {in_dir}\n"
             f"[bold]Setup:[/bold]  {setup}\n"
             f"[bold]Output:[/bold] {out_dir} ({base_name}.*)\n",
-            title="pe-flac-mixer",
+            title="pe-mixer",
         )
     )
 
@@ -618,7 +618,7 @@ def create_setup(
             f"[bold]Source directory:[/bold] {src_dir}\n"
             f"[bold]Setup name:[/bold]       {setup_name}\n"
             f"[bold]Target file:[/bold]      {target_path}",
-            title="pe-flac-mixer",
+            title="pe-mixer",
         )
     )
 
@@ -664,7 +664,7 @@ def create_setup(
             f"  2. [bold]Panning[/bold] (Verteilung im Stereobild)\n"
             f"  3. Eventuelle [bold]Spezial-Instrumente[/bold] (z.B. Keys, Akustik-Gitarren)\n\n"
             f"Anschließend kannst du den Mix mit diesem Setup starten:\n"
-            f'  [bold green]uv run pe-flac-mixer mix "{src_dir}" --setup "{setup_name}"[/bold green]',
+            f'  [bold green]uv run pe-mixer mix "{src_dir}" --setup "{setup_name}"[/bold green]',
             title="Setup Erstellt",
             border_style="yellow",
         )
